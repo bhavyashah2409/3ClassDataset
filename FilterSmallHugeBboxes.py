@@ -1,8 +1,8 @@
 import os
 import cv2 as cv
 
-ALL_DIR = 'Subset'
-AREA_THRESHOLD = 500
+ALL_DIR = 'AllData'
+AREA_THRESHOLD = 300
 
 for video in os.listdir(ALL_DIR):
     files = sorted(os.listdir(os.path.join(ALL_DIR, video)))

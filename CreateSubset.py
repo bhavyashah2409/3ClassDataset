@@ -1,23 +1,25 @@
-import os
-import shutil as s
+# import os
+# import shutil as s
 
-FOLDER = 'AllData'
-SUBSET = 'Subset'
-START = 100
-END = 1000
-SKIP = 10
+# FOLDER = 'AllData'
+# SUBSET = 'Subset'
+# START = 100
+# END = 1000
+# SKIP = 10
 
-if not os.path.exists(SUBSET):
-    os.mkdir(SUBSET)
+# if not os.path.exists(SUBSET):
+#     os.mkdir(SUBSET)
 
-for video in sorted(os.listdir(FOLDER)):
-    if not os.path.exists(os.path.join(SUBSET, video)):
-        os.mkdir(os.path.join(SUBSET, video))
-    frames = sorted(os.listdir(os.path.join(FOLDER, video)))[START: END: SKIP]
-    labels = sorted(os.listdir(os.path.join(FOLDER, video)))[START + 1: END + 1: SKIP]
-    for frame, label in zip(frames, labels):
-        s.copyfile(os.path.join(FOLDER, video, frame), os.path.join(SUBSET, video, frame))
-        s.copyfile(os.path.join(FOLDER, video, label), os.path.join(SUBSET, video, label))
+# for video in sorted(os.listdir(FOLDER)):
+#     if not os.path.exists(os.path.join(SUBSET, video)):
+#         os.mkdir(os.path.join(SUBSET, video))
+#     frames = sorted(os.listdir(os.path.join(FOLDER, video)))[START: END: SKIP]
+#     labels = sorted(os.listdir(os.path.join(FOLDER, video)))[START + 1: END + 1: SKIP]
+#     for frame, label in zip(frames, labels):
+#         s.copyfile(os.path.join(FOLDER, video, frame), os.path.join(SUBSET, video, frame))
+#         s.copyfile(os.path.join(FOLDER, video, label), os.path.join(SUBSET, video, label))
+
+####################################################################################################
 
 # import os
 # import cv2 as cv

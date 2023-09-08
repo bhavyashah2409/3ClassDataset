@@ -1,7 +1,7 @@
 import os
 import shutil as s
 
-ALL_DIR = 'Subset'
+ALL_DIR = 'AllData'
 AUGMENT_DIR = 'augment'
 FOLDER = 'data'
 REDUNDANT = 'Redundant'
@@ -53,24 +53,24 @@ s.rmtree(ALL_DIR)
 
 with open('custom_data.yaml', 'w') as f:
     f.write("path: 'data'\n")
-    f.write("train: 'train\images'\n")
-    f.write("val: 'val\images'\n")
+    f.write("train: 'train/images'\n")
+    f.write("val: 'val/images'\n")
+    f.write("test: 'test/images'\n")
     f.write("\n")
-    f.write("nc: 2\n")
+    f.write("nc: 3\n")
     f.write("\n")
-    f.write("names: ['BOAT', 'SEAMARK']")
+    f.write("names: ['MISCELLANEOUS', 'BOAT', 'SEAMARK']")
     f.close()
 
-frames = sorted(os.listdir(AUGMENT_DIR))[0::2]
-labels = sorted(os.listdir(AUGMENT_DIR))[1::2]
-TRAIN_SIZE = 0.8
-size = int(TRAIN_SIZE * len(frames))
-
-for frame, label in zip(frames[:size], labels[:size]):
-    os.rename(os.path.join(AUGMENT_DIR, frame), os.path.join(FOLDER, 'train', 'images', frame))
-    os.rename(os.path.join(AUGMENT_DIR, label), os.path.join(FOLDER, 'train', 'labels', label))
-for frame, label in zip(frames[size:], labels[size:]):
-    os.rename(os.path.join(AUGMENT_DIR, frame), os.path.join(FOLDER, 'val', 'images', frame))
-    os.rename(os.path.join(AUGMENT_DIR, label), os.path.join(FOLDER, 'val', 'labels', label))
-
-s.rmtree(AUGMENT_DIR)
+if os.path.exists(AUGMENT_DIR):
+    frames = sorted(os.listdir(AUGMENT_DIR))[0::2]
+    labels = sorted(os.listdir(AUGMENT_DIR))[1::2]
+    TRAIN_SIZE = 0.8
+    size = int(TRAIN_SIZE * len(frames))
+    for frame, label in zip(frames[:size], labels[:size]):
+        os.rename(os.path.join(AUGMENT_DIR, frame), os.path.join(FOLDER, 'train', 'images', frame))
+        os.rename(os.path.join(AUGMENT_DIR, label), os.path.join(FOLDER, 'train', 'labels', label))
+    for frame, label in zip(frames[size:], labels[size:]):
+        os.rename(os.path.join(AUGMENT_DIR, frame), os.path.join(FOLDER, 'val', 'images', frame))
+        os.rename(os.path.join(AUGMENT_DIR, label), os.path.join(FOLDER, 'val', 'labels', label))
+    s.rmtree(AUGMENT_DIR)

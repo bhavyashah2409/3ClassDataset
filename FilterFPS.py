@@ -1,6 +1,6 @@
 import os
 
-ALL_DIR = 'Subset'
+ALL_DIR = 'AllData'
 REDUNDANT = 'Redundant'
 
 if not os.path.exists(REDUNDANT):

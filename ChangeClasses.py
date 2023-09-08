@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-ALL_DIR = 'Subset'
+ALL_DIR = 'AllData'
 
 classes = open('classes.txt', 'r').read().split('\n')
 classes.remove('')

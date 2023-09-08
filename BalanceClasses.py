@@ -4,19 +4,19 @@ import cv2 as cv
 import pandas as pd
 import albumentations as a
 
-ALL_DIR = 'Subset'
+ALL_DIR = 'AllData'
 AUGMENT_DIR = 'augment'
-AREA_THRESHOLD = 500
+AREA_THRESHOLD = 300
 TRANSFORM = a.Compose([
     a.HorizontalFlip(p=0.2),
     a.ColorJitter(brightness=(0.8, 1.2), contrast=(0.8, 1.2), saturation=(0.9, 1.1), hue=(-0.1, 0.1), p=0.2),
     a.Sharpen(alpha=(0.1, 0.3), p=0.2),
-    a.ShiftScaleRotate(shift_limit=(0.01, 0.05), scale_limit=(0.0, 0.3), rotate_limit=(0.0, 0.0), interpolation=cv.INTER_CUBIC, border_mode=cv.BORDER_REFLECT_101, p=0.2),
+    a.ShiftScaleRotate(shift_limit=(0.1, 0.3), scale_limit=(0.0, 0.3), rotate_limit=(0.0, 0.0), interpolation=cv.INTER_CUBIC, border_mode=cv.BORDER_REFLECT_101, p=0.2),
     a.Emboss(alpha=(0.1, 0.3), strength=(0.1, 0.5), p=0.2),
     # a.Equalize(p=0.2),
     # a.HueSaturationValue(hue_shift_limit=(-5, 5), sat_shift_limit=(-5, 5), val_shift_limit=(-1, 1), p=0.2),
     # a.RGBShift(r_shift_limit=(-5, 5), g_shift_limit=(-5, 5), b_shift_limit=(-5, 5), p=0.1),
-    # a.GaussianBlur(blur_limit=(1, 5), sigma_limit=(0.1, 0.3), p=0.1),
+    a.GaussianBlur(blur_limit=(1, 5), sigma_limit=(0.1, 0.3), p=0.1),
     # a.Rotate(limit=(-45, 45), interpolation=cv.INTER_CUBIC, value=0, p=0.1),
     # a.SafeRotate(limit=(-45, 45), interpolation=cv.INTER_CUBIC, border_mode=cv.BORDER_REFLECT_101),
     # a.NoOp(p=0.1),
@@ -48,7 +48,8 @@ print('CLASS COUNT BEFORE AUGMENTATION:\n', class_counts)
 
 min_class = min(list(class_counts.values()))
 max_class = max(list(class_counts.values()))
-iterations = math.floor(max_class / (min_class * 5))
+# iterations = math.floor(max_class / min_class)
+iterations = 5
 
 df = pd.DataFrame({'image': images, 'label': annots})
 
@@ -113,23 +114,24 @@ def augment_images_and_labels(a, transform, folder, iteration, count, max_count)
         f.close()
     return aug_img_path, aug_label_path, bboxes
 
-all_aug_df = pd.DataFrame({'image': [], 'label': [], 'bbox': []})
-for iteration in range(iterations):
-    aug_df = df.apply(lambda a: augment_images_and_labels(a, TRANSFORM, AUGMENT_DIR, iteration, class_counts, max_class), axis=1, result_type='expand')
-    aug_df.columns = ['image', 'label', 'bbox']
-    all_aug_df = pd.concat([all_aug_df, aug_df], axis=0, ignore_index=True)
-    print(f'ITERATION {iteration} DONE')
-
 def remove_blank(a):
     if not a['keep']:
         os.remove(a['image'])
         os.remove(a['label'])
     return a['keep']
 
-all_aug_df['keep'] = all_aug_df['bbox'].apply(lambda a: len(a) > 0)
-all_aug_df['keep'] = all_aug_df.apply(lambda a: remove_blank(a), axis=1)
-all_aug_df = all_aug_df[all_aug_df['keep'] == True]
-all_aug_df.reset_index(drop=True, inplace=True)
+all_aug_df = pd.DataFrame({'image': [], 'label': [], 'bbox': []})
+for iteration in range(iterations):
+    aug_df = df.apply(lambda a: augment_images_and_labels(a, TRANSFORM, AUGMENT_DIR, iteration, class_counts, max_class), axis=1, result_type='expand')
+    aug_df.columns = ['image', 'label', 'bbox']
+    aug_df['keep'] = aug_df['bbox'].apply(lambda a: len(a) > 0)
+    aug_df['keep'] = aug_df.apply(lambda a: remove_blank(a), axis=1)
+    aug_df = aug_df[aug_df['keep'] == True]
+    aug_df.reset_index(drop=True, inplace=True)
+    aug_df = aug_df.drop(columns=['keep'])
+    all_aug_df = pd.concat([all_aug_df, aug_df], axis=0, ignore_index=True)
+    print(f'ITERATION {iteration} DONE')
+
 class_count = {c: 0 for c in classes}
 
 def count_classes(a):
@@ -139,5 +141,5 @@ def count_classes(a):
 all_aug_df['bbox'].apply(lambda a: count_classes(a))
 print('ADDED COUNTS:\n', class_count)
 
-all_aug_df = all_aug_df.drop(columns=['keep', 'bbox'])
+all_aug_df = all_aug_df.drop(columns=['bbox'])
 all_aug_df.to_csv('aug_df.csv', index=False)
