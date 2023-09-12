@@ -3,7 +3,7 @@ import cv2 as cv
 import numpy as np
 
 ALL_DIR = 'AllData'
-BRIGHTNESS_THRESHOLD = 7000000
+BRIGHTNESS_THRESHOLD = 8000000
 
 for video in os.listdir(ALL_DIR):
     frames = sorted(os.listdir(os.path.join(ALL_DIR, video)))[0::2]
@@ -13,6 +13,6 @@ for video in os.listdir(ALL_DIR):
         label_path = os.path.join(ALL_DIR, video, label)
         bboxes = open(label_path, 'r').read()
         img = cv.imread(img_path)
-        if np.sum(img) < BRIGHTNESS_THRESHOLD and len(bboxes) < 2:
+        if np.sum(img) < BRIGHTNESS_THRESHOLD:
             os.remove(img_path)
             os.remove(label_path)

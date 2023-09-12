@@ -59,7 +59,7 @@ with open('custom_data.yaml', 'w') as f:
     f.write("\n")
     f.write("nc: 3\n")
     f.write("\n")
-    f.write("names: ['MISCELLANEOUS', 'BOAT', 'SEAMARK']")
+    f.write("names: ['MISC', 'BOAT', 'SEAMARK']")
     f.close()
 
 if os.path.exists(AUGMENT_DIR):

@@ -14,9 +14,9 @@ VIDEO_INTERVAL_DICT = {
 
 for video in sorted(os.listdir(ALL_DIR)):
     if video in VIDEO_INTERVAL_DICT:
-        frames = sorted(os.listdir(os.path.join(ALL_DIR, video)))[0::VIDEO_INTERVAL_DICT[video]]
-        labels = sorted(os.listdir(os.path.join(ALL_DIR, video)))[1::VIDEO_INTERVAL_DICT[video]]
-        for frame, label in zip(sorted(os.listdir(os.path.join(ALL_DIR, video)))[0::2], sorted(os.listdir(os.path.join(ALL_DIR, video)))[1::2]):
+        frames = sorted(os.listdir(os.path.join(ALL_DIR, video)))[0::2 * VIDEO_INTERVAL_DICT[video]]
+        labels = sorted(os.listdir(os.path.join(ALL_DIR, video)))[1::2 * VIDEO_INTERVAL_DICT[video]]
+        for frame, label in zip(frames, labels):
             if frame not in frames:
                 os.rename(os.path.join(ALL_DIR, video, frame), os.path.join(REDUNDANT, frame))
             if label not in labels:
